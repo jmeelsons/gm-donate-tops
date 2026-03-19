@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNB-RU | Топ донатеры</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0000;
+            font-family: 'Bahnschrift', 'Segoe UI', 'Arial', sans-serif;
+            font-weight: 500;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, #2f0000 0%, #0b0000 90%);
+            animation: simplePulse 8s infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes simplePulse {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; background: radial-gradient(circle at 70% 30%, #3f0000 0%, #130000 95%); }
+        }
+
+        .top-card {
+            background: #100101;
+            border: 2px solid #b30000;
+            border-radius: 28px;
+            box-shadow: 0 0 40px #b30000;
+            max-width: 950px;
+            width: 100%;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 10;
+            animation: borderSimple 3s infinite alternate;
+        }
+
+        @keyframes borderSimple {
+            0% { box-shadow: 0 0 25px #a00000; border-color: #a10000; }
+            100% { box-shadow: 0 0 60px #ff3a3a; border-color: #ff6262; }
+        }
+
+        h1 {
+            font-family: 'Bahnschrift', 'Impact', sans-serif;
+            font-weight: 700;
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 3px;
+            color: #ffc1c1;
+            text-shadow: 0 0 10px red, 0 0 30px #a00000;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #880000;
+            padding-bottom: 12px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: #1c0202;
+            border: 2px solid #b30000;
+            border-radius: 60px;
+            padding: 0.8rem 1.8rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            box-shadow: 0 3px 0 #3f0000;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #f0d0d0;
+        }
+
+        .stat-item .label {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            font-family: 'Bahnschrift', sans-serif;
+        }
+
+        .stat-item .value {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #ff8a8a;
+            text-shadow: 0 0 8px #f00;
+        }
+
+        .leaderboard {
+            list-style: none;
+            counter-reset: donor-counter;
+            margin-bottom: 2rem;
+        }
+
+        .leaderboard li {
+            counter-increment: donor-counter;
+            background: #1c0202;
+            border-left: 6px solid #d00000;
+            border-radius: 20px 6px 6px 20px;
+            margin: 15px 0;
+            padding: 12px 20px 12px 0;
+            color: #f0d0d0;
+            font-weight: 500;
+            box-shadow: 0 3px 0 #3f0000;
+            transition: all 0.15s;
+            opacity: 0;
+            animation: fadeIn 0.4s forwards;
+            animation-delay: calc(0.07s * var(--i));
+            font-family: 'Bahnschrift', 'Arial', sans-serif;
+            border-right: 1px solid #b30000;
+            display: flex;
+            align-items: center;
+        }
+
+        .leaderboard li:hover {
+            background: #2d0404;
+            border-left-width: 10px;
+            border-left-color: #ff4f4f;
+        }
+
+        .rank {
+            width: 48px;
+            height: 48px;
+            background: #2d0404;
+            border: 2px solid #b30000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: #ff8a8a;
+            margin-left: 10px;
+            margin-right: 15px;
+            box-shadow: 0 0 15px #ff0000;
+            text-shadow: 0 0 8px #f00;
+        }
+
+        .rank.gold {
+            background: #3f1f1f;
+            border-color: #ffaa00;
+            color: #ffaa00;
+            box-shadow: 0 0 20px #ffaa00;
+        }
+
+        .rank.silver {
+            background: #2f2f3f;
+            border-color: #c0c0c0;
+            color: #e0e0e0;
+            box-shadow: 0 0 20px #a0a0a0;
+        }
+
+        .rank.bronze {
+            background: #3f2a1f;
+            border-color: #cd7f32;
+            color: #ffb347;
+            box-shadow: 0 0 20px #cd7f32;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #2d0404;
+            border: 2px solid #b30000;
+            margin-right: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            color: #ff8a8a;
+            box-shadow: 0 0 15px #a00000;
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffc1c1;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            text-shadow: 0 0 5px #a00000;
+        }
+
+        .details {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: #f0d0d0;
+        }
+
+        .details span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .details i {
+            color: #ff8a8a;
+            font-style: normal;
+            font-weight: 600;
+            text-shadow: 0 0 5px #f00;
+        }
+
+        .amount {
+            background: #2d0404;
+            border: 2px solid #b30000;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #ff8a8a;
+            white-space: nowrap;
+            margin-left: 0.8rem;
+            box-shadow: 0 0 15px #a00000;
+            text-shadow: 0 0 8px #f00;
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffd0d0;
+            background: #1f0101;
+            padding: 14px 10px;
+            border-radius: 50px;
+            border: 2px solid #b30000;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Bahnschrift', sans-serif;
+        }
+
+        .footer-note a {
+            color: #ff8a8a;
+            text-decoration: none;
+            border-bottom: 1px dotted #ff0000;
+        }
+
+        .footer-note a:hover {
+            text-shadow: 0 0 8px #f00;
+        }
+
+        .loader {
+            text-align: center;
+            padding: 2rem;
+            color: #f0d0d0;
+            font-size: 1.2rem;
+            width: 100%;
+        }
+
+        .loader .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #2d0404;
+            border-top: 4px solid #ff0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 20px #f00;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #1c0202;
+            border-left: 6px solid #ff0000;
+            padding: 1.5rem;
+            border-radius: 18px;
+            color: #ffb3b3;
+            margin: 1rem 0;
+            text-align: center;
+            border-right: 1px solid #b30000;
+        }
+
+        .error-message button {
+            background: #2d0404;
+            border: 2px solid #ff0000;
+            color: #ff8a8a;
+            padding: 0.5rem 2rem;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-family: 'Bahnschrift', sans-serif;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px #a00000;
+        }
+
+        .error-message button:hover {
+            background: #3f0404;
+            border-color: #ff6262;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateX(-30px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 650px) {
+            .top-card { padding: 20px; }
+            h1 { font-size: 2.5rem; }
+            .stats-bar { flex-direction: column; align-items: center; }
+            .leaderboard li { flex-wrap: wrap; border-radius: 30px; }
+            .amount { margin-left: 0; margin-top: 8px; width: 100%; text-align: center; }
+            .details { flex-wrap: wrap; gap: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="top-card">
+        <h1>🔥 ТОП ДОНАТЕРЫ 🔥</h1>
+
+        <!-- статистика -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-item"><span class="label">👥 всего донатеров</span> <span class="value" id="totalDonators">—</span></div>
+            <div class="stat-item"><span class="label">💰 собрано</span> <span class="value" id="totalSum">— ₽</span></div>
+            <div class="stat-item"><span class="label">🏆 макс. вклад</span> <span class="value" id="maxDonation">—</span></div>
+        </div>
+
+        <!-- список топ-донатеров -->
+        <ul class="leaderboard" id="leaderboardList">
+            <li style="justify-content: center; background: #1c0202; border-left: 6px solid #d00000; padding: 2rem;" id="loadingPlaceholder">
+                <div class="loader">
+                    <div class="spinner"></div>
+                    Загружаем список почётных донатеров...
+                </div>
+            </li>
+        </ul>
+
+        <div class="footer-note">
+            ⚡ данные обновляются в реальном времени · <a href="#" onclick="fetchTopDonaters(); return false;">обновить</a> · <a href="https://gm-donate.net" target="_blank">IGS</a>
+        </div>
+    </main>
+
+    <script>
+        // Конфигурация из вашего config_sv.lua
+        const CONFIG = {
+            projectId: 16078,
+            projectKey: '4ee8e1ef3c45eca9db7dad8845480b76',
+            apiBase: 'https://api.gm-donate.net/v1'
+        };
+
+        function getAuthHeader() {
+            return 'Basic ' + btoa(CONFIG.projectId + ':' + CONFIG.projectKey);
+        }
+
+        async function fetchTopDonaters() {
+            const leaderboardEl = document.getElementById('leaderboardList');
+            const totalDonatorsEl = document.getElementById('totalDonators');
+            const totalSumEl = document.getElementById('totalSum');
+            const maxDonationEl = document.getElementById('maxDonation');
+
+            // Загрузка
+            leaderboardEl.innerHTML = `
+                <li style="justify-content: center; background: #1c0202; border-left: 6px solid #d00000; padding: 2rem;">
+                    <div class="loader"><div class="spinner"></div>Загружаем список почётных донатеров...</div>
+                </li>
+            `;
+
+            try {
+                // Запрос к API IGS (возможно потребуется другой endpoint)
+                const response = await fetch(`${CONFIG.apiBase}/project/top`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': getAuthHeader(),
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                // Ожидаемая структура: { top: Array, stats: { total_donators, total_amount, max_amount } }
+                const topList = data.top || data;
+                const stats = data.stats || {};
+
+                totalDonatorsEl.textContent = stats.total_donators ?? (topList.length ? topList.length : '—');
+                totalSumEl.textContent = (stats.total_amount ?? '—') + ' ₽';
+                maxDonationEl.textContent = stats.max_amount ? (stats.max_amount + ' ₽') : '—';
+
+                if (!topList || topList.length === 0) {
+                    leaderboardEl.innerHTML = `<li style="justify-content: center; background: #1c0202; border-left: 6px solid #d00000; padding: 2rem; color: #f0d0d0;">😔 Пока ни одного доната. Будь первым!</li>`;
+                    return;
+                }
+
+                let html = '';
+                topList.slice(0, 10).forEach((donater, index) => {
+                    const rank = index + 1;
+                    let rankClass = '';
+                    if (rank === 1) rankClass = 'gold';
+                    else if (rank === 2) rankClass = 'silver';
+                    else if (rank === 3) rankClass = 'bronze';
+
+                    const name = donater.name || donater.nick || `Игрок-${donater.steamid?.slice(-4) || index}`;
+                    const amount = donater.total || donater.amount || 0;
+                    const purchases = donater.purchases_count || donater.count || '—';
+                    const lastDate = donater.last_donate 
+                        ? new Date(donater.last_donate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+                        : '—';
+
+                    const initial = name.charAt(0).toUpperCase();
+
+                    html += `
+                        <li style="--i:${rank + 2}">
+                            <div class="rank ${rankClass}">${rank}</div>
+                            <div class="avatar">${initial}</div>
+                            <div class="info">
+                                <div class="name">${name}</div>
+                                <div class="details">
+                                    <span>🛒 покупок: <i>${purchases}</i></span>
+                                    <span>📅 последний: <i>${lastDate}</i></span>
+                                </div>
+                            </div>
+                            <div class="amount">${amount.toLocaleString()} ₽</div>
+                        </li>
+                    `;
+                });
+
+                leaderboardEl.innerHTML = html;
+            } catch (error) {
+                console.error('IGS Top error:', error);
+                leaderboardEl.innerHTML = `
+                    <li class="error-message">
+                        ❌ Не удалось загрузить топ донатеров.<br>
+                        <span style="opacity:0.8;">${error.message}</span><br>
+                        <button onclick="fetchTopDonaters()">Повторить</button>
+                    </li>
+                `;
+                totalDonatorsEl.textContent = '—';
+                totalSumEl.textContent = '— ₽';
+                maxDonationEl.textContent = '—';
+            }
+        }
+
+        window.addEventListener('load', fetchTopDonaters);
+        window.fetchTopDonaters = fetchTopDonaters;
+    </script>
+</body>
+</html>
